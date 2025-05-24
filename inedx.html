@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heş Funksiyaları - Hash Functions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #3498db;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .hash-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-width: 140px;
+        }
+
+        .hash-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-md5 { background: #e74c3c; color: white; }
+        .btn-sha1 { background: #f39c12; color: white; }
+        .btn-sha256 { background: #27ae60; color: white; }
+        .btn-base64 { background: #9b59b6; color: white; }
+        .btn-clear { background: #95a5a6; color: white; }
+
+        .results-section {
+            margin-top: 30px;
+        }
+
+        .result-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .result-item:hover {
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-header {
+            padding: 15px 20px;
+            font-weight: 600;
+            color: white;
+            font-size: 1.1em;
+        }
+
+        .result-content {
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            word-break: break-all;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #2980b9;
+        }
+
+        .md5-header { background: #e74c3c; }
+        .sha1-header { background: #f39c12; }
+        .sha256-header { background: #27ae60; }
+        .base64-header { background: #9b59b6; }
+
+        .info-section {
+            background: #ecf0f1;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .info-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .info-section p {
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .hash-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Heş Funksiyaları</h1>
+            <p>Mətnlərinizi müxtəlif heş alqoritmləri ilə şifrələyin</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="inputText">🔤 Şifrələnəcək mətn:</label>
+                    <textarea id="inputText" placeholder="Bura şifrələmək istədiyiniz mətni yazın..."></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button class="hash-btn btn-md5" onclick="generateHash('md5')">
+                        MD5 Heş
+                    </button>
+                    <button class="hash-btn btn-sha1" onclick="generateHash('sha1')">
+                        SHA-1 Heş
+                    </button>
+                    <button class="hash-btn btn-sha256" onclick="generateHash('sha256')">
+                        SHA-256 Heş
+                    </button>
+                    <button class="hash-btn btn-base64" onclick="generateHash('base64')">
+                        Base64 Kodlaşdırma
+                    </button>
+                    <button class="hash-btn btn-clear" onclick="clearAll()">
+                        🗑️ Təmizlə
+                    </button>
+                </div>
+            </div>
+
+            <div class="results-section" id="results">
+                <!-- Nəticələr burada görünəcək -->
+            </div>
+
+            <div class="info-section">
+                <h3>📋 Heş Funksiyaları haqqında məlumat:</h3>
+                <p><strong>MD5:</strong> 128-bit heş dəyəri yaradan kriptoqrafik heş funksiyası. Sürətli olsa da, təhlükəsizlik baxımından artıq köhnəlmişdir.</p>
+                <p><strong>SHA-1:</strong> 160-bit heş dəyəri yaradan Secure Hash Algorithm. MD5-dən daha təhlükəsizdir, lakin artıq köhnəlmiş sayılır.</p>
+                <p><strong>SHA-256:</strong> 256-bit heş dəyəri yaradan müasir və təhlükəsiz kriptoqrafik heş funksiyası. Bitcoin və digər blokçeyn texnologiyalarında istifadə olunur.</p>
+                <p><strong>Base64:</strong> İkili məlumatları ASCII mətn formatında kodlaşdırmaq üçün istifadə olunan kodlaşdırma sxemi.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        Nəticə panoya kopyalandı! ✅
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        let results = {};
+
+        async function generateHash(type) {
+            const inputText = document.getElementById('inputText').value.trim();
+            
+            if (!inputText) {
+                alert('Zəhmət olmasa, əvvəlcə mətn daxil edin!');
+                return;
+            }
+
+            let result = '';
+            let displayName = '';
+            let headerClass = '';
+
+            try {
+                switch(type) {
+                    case 'md5':
+                        result = CryptoJS.MD5(inputText).toString();
+                        displayName = 'MD5 Heş';
+                        headerClass = 'md5-header';
+                        break;
+                    case 'sha1':
+                        result = CryptoJS.SHA1(inputText).toString();
+                        displayName = 'SHA-1 Heş';
+                        headerClass = 'sha1-header';
+                        break;
+                    case 'sha256':
+                        result = CryptoJS.SHA256(inputText).toString();
+                        displayName = 'SHA-256 Heş';
+                        headerClass = 'sha256-header';
+                        break;
+                    case 'base64':
+                        result = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(inputText));
+                        displayName = 'Base64 Kodlaşdırma';
+                        headerClass = 'base64-header';
+                        break;
+                }
+
+                results[type] = {
+                    value: result,
+                    name: displayName,
+                    headerClass: headerClass
+                };
+
+                displayResults();
+            } catch (error) {
+                alert('Xəta baş verdi: ' + error.message);
+            }
+        }
+
+        function displayResults() {
+            const resultsContainer = document.getElementById('results');
+            let html = '';
+
+            for (const [key, data] of Object.entries(results)) {
+                html += `
+                    <div class="result-item">
+                        <div class="result-header ${data.headerClass}">
+                            ${data.name}
+                        </div>
+                        <div class="result-content">
+                            <button class="copy-btn" onclick="copyToClipboard('${key}')">
+                                📋 Kopyala
+                            </button>
+                            ${data.value}
+                        </div>
+                    </div>
+                `;
+            }
+
+            resultsContainer.innerHTML = html;
+        }
+
+        function copyToClipboard(type) {
+            const text = results[type].value;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast();
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast();
+            });
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function clearAll() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('results').innerHTML = '';
+            results = {};
+        }
+
+        // Enter düyməsi ilə SHA-256 heş yaratmaq
+        document.getElementById('inputText').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                generateHash('sha256');
+            }
+        });
+    </script>
+</body>
+</html>
